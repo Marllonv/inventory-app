@@ -1,0 +1,13 @@
+# Node
+node_modules/
+dist/
+.env
+
+# PHP / Composer
+vendor/
+.phpunit.result.cache
+
+# Laragon / IDEs
+.vscode/
+.idea/
+*.log
