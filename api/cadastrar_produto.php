@@ -18,11 +18,10 @@ if (!empty($dados->nome) && !empty($dados->preco)) {
         $query = "INSERT INTO produtos (nome, preco, quantidade, categoria_id) VALUES (:nome, :preco, :quantidade, :cat_id)";
         $stmt = $pdo->prepare($query);
 
-        // Bind dos valores para segurança contra SQL Injection
         $stmt->bindParam(":nome", $dados->nome);
         $stmt->bindParam(":preco", $dados->preco);
         $stmt->bindParam(":quantidade", $dados->quantidade);
-        $stmt->bindValue(":cat_id", 1); // Por enquanto, fixo na categoria 'Geral'
+        $stmt->bindValue(":cat_id", 1);
 
         if ($stmt->execute()) {
             http_response_code(201);
