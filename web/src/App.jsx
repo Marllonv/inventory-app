@@ -5,6 +5,7 @@ function App() {
   const [produtos, setProdutos] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [novoProduto, setNovoProduto] = useState({ nome: '', preco: '', quantidade: '' });
+  const [editandoId, setEditandoId] = useState(null);
 
   // Busca dados do Servidor
   const buscarDados = async () => {
@@ -28,13 +29,23 @@ function App() {
   const handleCadastro = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost/inventory-app/api/cadastrar_produto.php', novoProduto);
-      alert("Cadastrado com sucesso!");
+      if (editandoId) {
+        // Edição (PUT)
+        await axios.put('http://localhost/inventory-app/api/atualizar_produto.php', {
+          ...novoProduto,
+          id: editandoId
+        });
+        alert("Atualizado com sucesso!");
+      } else {
+        // Cadastro (POST)
+        await axios.post('http://localhost/inventory-app/api/cadastrar_produto.php', novoProduto);
+        alert("Cadastrado com sucesso!");
+      }
       setNovoProduto({ nome: '', preco: '', quantidade: '' });
-      buscarDados(); 
+      setEditandoId(null);
+      buscarDados();
     } catch (error) {
-      console.error("Erro ao cadastrar:", error);
-      alert("Erro ao conectar com o servidor.");
+      console.error("Erro na operação:", error);
     }
   };
 
@@ -49,6 +60,17 @@ function App() {
         alert("Não foi possível excluir o produto.");
       }
     }
+  };
+
+  // Atualização de Produto
+  const handleUpdate = (produto) => {
+    setEditandoId(produto.id);
+    setNovoProduto({
+      nome: produto.nome,
+      preco: produto.preco,
+      quantidade: produto.quantidade
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Rola para o formulário
   };
 
   useEffect(() => {
@@ -104,7 +126,7 @@ function App() {
             type="submit" 
             className="bg-green-600 text-white p-2 rounded-md hover:bg-green-700 transition font-bold shadow-md cursor-pointer"
           >
-            Salvar Produto
+            {editandoId ? 'Atualizar Produto' : 'Salvar Produto'}
           </button>
         </form>
 
@@ -116,6 +138,27 @@ function App() {
             {Array.isArray(produtos) && produtos.length > 0 ? (
               produtos.map(produto => (
                 <div key={produto.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition relative group">
+
+                  <h2 className="font-bold text-xl text-gray-800 pr-8">{produto.nome}</h2>
+                  <p className="text-blue-500 font-semibold mt-1">R$ {parseFloat(produto.preco || 0).toFixed(2)}</p>
+                  
+                  <div className="mt-4 flex justify-between items-center">
+                    <span className="text-sm text-gray-500">Qtd: {produto.quantidade}</span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${produto.quantidade > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                      {produto.quantidade > 0 ? 'Em estoque' : 'Esgotado'}
+                    </span>
+                  </div>
+                  {/* Botão de Editar - Adicione ANTES do botão de deletar */}
+                  <button 
+                      onClick={() => handleUpdate(produto)}
+                      className="absolute top-4 right-14 flex items-center justify-center bg-blue-50 text-blue-500 hover:bg-blue-100 hover:text-blue-700 rounded-full border border-blue-100 shadow-sm cursor-pointer"
+                      style={{ width: '40px', height: '40px', minWidth: '40px', minHeight: '40px' }}
+                      title="Editar produto"
+                  >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                      </svg>
+                  </button>
                   <button 
                       onClick={() => handleDelete(produto.id)}
                       className="absolute top-4 right-4 text-red-500 hover:text-red-700 cursor-pointer bg-red-50 hover:bg-red-100 rounded-full transition-all flex items-center justify-center border border-red-100 shadow-sm"
@@ -138,16 +181,6 @@ function App() {
                           />
                       </svg>
                   </button>
-
-                  <h2 className="font-bold text-xl text-gray-800 pr-8">{produto.nome}</h2>
-                  <p className="text-blue-500 font-semibold mt-1">R$ {parseFloat(produto.preco || 0).toFixed(2)}</p>
-                  
-                  <div className="mt-4 flex justify-between items-center">
-                    <span className="text-sm text-gray-500">Qtd: {produto.quantidade}</span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${produto.quantidade > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                      {produto.quantidade > 0 ? 'Em estoque' : 'Esgotado'}
-                    </span>
-                  </div>
                 </div>
               ))
             ) : (
