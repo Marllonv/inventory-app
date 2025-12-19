@@ -1,65 +1,57 @@
-export const ProductForm = ({ novoProduto, setNovoProduto, onSubmit, editandoId, onCancelar }) => {
+export const ProductForm = ({ novoProduto, setNovoProduto, onSubmit, editandoId, onCancelar, categorias }) => {
   return (
-    <form onSubmit={onSubmit} className="bg-white p-6 rounded-xl shadow-md border border-gray-100 mb-8 max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">
-        {editandoId ? 'Editar Produto' : 'Novo Produto'}
-      </h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nome do Produto</label>
-          <input
-            type="text"
-            placeholder="Ex: Teclado Mecânico"
-            value={novoProduto.nome}
-            onChange={(e) => setNovoProduto({ ...novoProduto, nome: e.target.value })}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
-          />
-        </div>
+    <form onSubmit={onSubmit} className="max-w-6xl mx-auto bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        
+        {/* Input Nome */}
+        <input 
+          type="text" 
+          placeholder="Nome do produto"
+          className="p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          value={novoProduto.nome}
+          onChange={(e) => setNovoProduto({...novoProduto, nome: e.target.value})}
+          required
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Preço (R$)</label>
-          <input
-            type="number"
-            step="0.01"
-            placeholder="0,00"
-            value={novoProduto.preco}
-            onChange={(e) => setNovoProduto({ ...novoProduto, preco: e.target.value })}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
-          />
-        </div>
+        {/* SELECT DE CATEGORIAS */}
+        <select 
+          className="p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+          value={novoProduto.categoria_id || ""}
+          onChange={(e) => setNovoProduto({...novoProduto, categoria_id: e.target.value})}
+        >
+          <option value="">Sem categoria</option>
+          {categorias.map(cat => (
+            <option key={cat.id} value={cat.id}>
+              {cat.nome}
+            </option>
+          ))}
+        </select>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Quantidade</label>
-          <input
-            type="number"
-            placeholder="0"
-            value={novoProduto.quantidade}
-            onChange={(e) => setNovoProduto({ ...novoProduto, quantidade: e.target.value })}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
-          />
-        </div>
+        <input 
+          type="number" 
+          placeholder="Preço"
+          className="p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          value={novoProduto.preco}
+          onChange={(e) => setNovoProduto({...novoProduto, preco: e.target.value})}
+          required
+        />
+
+        <input 
+          type="number" 
+          placeholder="Quantidade"
+          className="p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          value={novoProduto.quantidade}
+          onChange={(e) => setNovoProduto({...novoProduto, quantidade: e.target.value})}
+          required
+        />
       </div>
 
-      <div className="mt-6 flex gap-3">
-        <button
-          type="submit"
-          className={`flex-1 p-3 rounded-lg font-bold text-white transition-colors ${
-            editandoId ? 'bg-orange-500 hover:bg-orange-600' : 'bg-blue-600 hover:bg-blue-700'
-          }`}
-        >
-          {editandoId ? 'Salvar Alterações' : 'Cadastrar Produto'}
+      <div className="flex gap-2 mt-4">
+        <button type="submit" className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+          {editandoId ? 'Atualizar Produto' : 'Cadastrar Produto'}
         </button>
-        
         {editandoId && (
-          <button
-            type="button"
-            onClick={onCancelar}
-            className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-bold hover:bg-gray-300 transition-colors"
-          >
+          <button type="button" onClick={onCancelar} className="px-6 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors">
             Cancelar
           </button>
         )}

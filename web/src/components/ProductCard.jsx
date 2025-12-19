@@ -1,7 +1,10 @@
 export const ProductCard = ({ produto, onEdit, onDelete }) => {
   return (
     <div className="relative p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all">
-      
+      {/* Categoria */}
+      <span className="inline-block px-2 py-0.5 mb-2 bg-blue-50 text-blue-600 text-[10px] font-bold uppercase rounded-full border border-blue-100">
+        {produto.categoria_nome || 'Sem Categoria'}
+        </span>
       {/* Informações */}
       <div className="pr-24">
         <h3 className="text-xl font-bold text-gray-800 truncate">{produto.nome}</h3>

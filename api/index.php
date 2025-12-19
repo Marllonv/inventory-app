@@ -10,23 +10,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 require_once 'config/database.php';
 require_once 'controllers/ProductController.php';
+require_once 'controllers/CategoryController.php';
 
-$controller = new ProductController($pdo);
+$productController = new ProductController($pdo);
+$categoryController = new CategoryController($pdo);
+
 $metodo = $_SERVER['REQUEST_METHOD'];
 $dados = json_decode(file_get_contents("php://input"));
 $id = $_GET['id'] ?? null;
 
+$rota = $_GET['route'] ?? 'produtos';
+
 switch ($metodo) {
     case 'GET':
-        $controller->listar();
+        if ($rota === 'categorias') {
+            $categoryController->listar();
+        } else {
+            $productController->listar();
+        }
         break;
     case 'POST':
-        $controller->criar($dados);
+        $productController->criar($dados);
         break;
     case 'PUT':
-        $controller->atualizar($dados);
+        $productController->atualizar($dados);
         break;
     case 'DELETE':
-        if ($id) $controller->deletar($id);
+        if ($id) $productController->deletar($id);
         break;
 }
