@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { ProductCard, ProductForm, Header, Filters } from './components';
+import { ProductCard, ProductForm, Header, Filters, InventoryLog } from './components';
 import api from './services/api';
 
 function App() {
+
   const [produtos, setProdutos] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [novoProduto, setNovoProduto] = useState({ nome: '', preco: '', quantidade: '' });
@@ -10,6 +11,7 @@ function App() {
   const [categorias, setCategorias] = useState([]);
   const [busca, setBusca] = useState('');
   const [filtroCategoria, setFiltroCategoria] = useState('');
+  const [historico, setHistorico] = useState([]);
 
   // Buscar Dados
   const buscarDados = async () => {
@@ -39,22 +41,28 @@ function App() {
     e.preventDefault();
     try {
       if (editandoId) {
-        // Update via PUT
-        await api.put('/', { ...novoProduto, id: editandoId });
+        await api.put('/', { 
+          id: editandoId,
+          nome: novoProduto.nome,
+          preco: novoProduto.preco,
+          quantidade: novoProduto.quantidade,
+          categoria_id: novoProduto.categoria_id || null
+        });
         alert("Atualizado com sucesso!");
       } else {
-        // Cadastro via POST
         await api.post('/', novoProduto);
         alert("Cadastrado com sucesso!");
       }
-      setNovoProduto({ nome: '', preco: '', quantidade: '' });
+
+      setNovoProduto({ nome: '', preco: '', quantidade: '', categoria_id: '' });
       setEditandoId(null);
-      buscarDados();
+      buscarHistorico();
+      buscarDados(); 
     } catch (error) {
       console.error("Erro na operação:", error);
+      alert("Erro ao processar solicitação.");
     }
   };
-
   // Exclusão
   const handleDelete = async (id) => {
     if (window.confirm("Tem certeza que deseja excluir este produto?")) {
@@ -75,7 +83,8 @@ function App() {
     setNovoProduto({
       nome: produto.nome,
       preco: produto.preco,
-      quantidade: produto.quantidade
+      quantidade: produto.quantidade,
+      categoria_id: produto.categoria_id || ''
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -91,11 +100,23 @@ function App() {
     return matchNome && matchCategoria;
   });
 
+  const buscarHistorico = async () => {
+    try {
+      const response = await api.get('/?route=historico');
+      setHistorico(Array.isArray(response.data) ? response.data : []);
+    } catch (error) {
+      console.error("Erro ao buscar histórico:", error);
+    }
+  };
+
   useEffect(() => {
     buscarDados();
     buscarCategorias();
+    buscarHistorico();
   }, []);
 
+
+// Render
 return (
     <div className="min-h-screen bg-gray-50 p-8">
       <Header totalProdutos={produtosFiltrados.length} />
@@ -109,7 +130,7 @@ return (
         categorias={categorias}
       />
 
-      {/* 3. Inserção do Componente de Filtros */}
+      {/* Inserção do Componente de Filtros */}
       <Filters 
         busca={busca} 
         setBusca={setBusca} 
@@ -135,7 +156,7 @@ return (
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {/* 4. Mapeamos os produtos FILTRADOS e não todos os produtos */}
+          {/*produtos FILTRADOS*/}
           {produtosFiltrados.map(produto => (
             <ProductCard 
               key={produto.id}
@@ -146,6 +167,7 @@ return (
           ))}
         </div>
       )}
+      <InventoryLog logs={historico} />
     </div>
   );
 }
