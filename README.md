@@ -9,6 +9,14 @@
 
 ---
 
+## 📺 Demonstração das Funcionalidades
+
+| Autenticação JWT | Dashboard Dinâmica | Controle de Usuários |
+| :---: | :---: | :---: |
+| ![Login](./assets/logininventoryapp.gif) | ![Dashboard](./assets/dashboardinventoryapp.gif) | ![Users](./assets/usercontrolinventoryapp.gif) |
+
+---
+
 ## 🚀 Sobre a Stack WRP
 Este projeto foi desenvolvido em ambiente **Windows**, utilizando a integração entre uma API modular em PHP e uma interface reativa em React.
 

@@ -16,7 +16,7 @@ export function Login() {
     } catch (err) {
       const mensagem = err.response?.data?.error || "Login ou Senha Inválidos";
       setErro(mensagem);
-      alert("O estado erro agora é: " + mensagem); // Se o alert aparecer e a tela não mudar, o problema é o HTML
+      alert(mensagem);
     }
   };
 
