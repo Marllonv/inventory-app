@@ -42,7 +42,13 @@ export function Dashboard() {
     e.preventDefault();
     try {
       if (editandoId) {
-        await api.put('/', { /* ... dados ... */ });
+        await api.put('/', {
+          id: editandoId,
+          nome: novoProduto.nome,
+          preco: novoProduto.preco,
+          quantidade: novoProduto.quantidade,
+          categoria_id: novoProduto.categoria_id || null
+        });
         alert("Atualizado com sucesso!");
       } else {
         await api.post('/', novoProduto);
