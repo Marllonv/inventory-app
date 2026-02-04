@@ -76,13 +76,25 @@ class ProductController {
     }
 
     public function listarMovimentacoes() {
-    $sql = "SELECT m.*, p.nome as produto_nome 
-            FROM movimentacoes m 
-            JOIN produtos p ON m.produto_id = p.id 
-            ORDER BY m.data_movimentacao DESC 
-            LIMIT 50";
-    $stmt = $this->pdo->query($sql);
-    echo json_encode($stmt->fetchAll());
-}
+        $sql = "SELECT m.*, p.nome as produto_nome 
+                FROM movimentacoes m 
+                JOIN produtos p ON m.produto_id = p.id 
+                ORDER BY m.data_movimentacao DESC 
+                LIMIT 50";
+        $stmt = $this->pdo->query($sql);
+        echo json_encode($stmt->fetchAll());
+    }
+    public function dadosGrafico() {
+        $sql = "SELECT c.nome, COUNT(p.id) as quantidade 
+                FROM categorias c 
+                LEFT JOIN produtos p ON c.id = p.categoria_id 
+                GROUP BY c.id";
+        $stmt = $this->pdo->query($sql);
+        $dados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        header('Content-Type: application/json');
+        echo json_encode($dados);
+        exit;
+    }
 
 }

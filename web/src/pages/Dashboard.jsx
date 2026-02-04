@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ProductCard, ProductForm, Header, Filters, InventoryLog } from '../components';
 import { AuthContext } from '../contexts/AuthContext';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import api from '../services/api';
 
 export function Dashboard() {
@@ -12,6 +13,7 @@ export function Dashboard() {
     const [busca, setBusca] = useState('');
     const [filtroCategoria, setFiltroCategoria] = useState('');
     const [historico, setHistorico] = useState([]);
+    const [dados, setDados] = useState([]);
 
   const buscarDados = async () => {
     setCarregando(true);
@@ -40,13 +42,7 @@ export function Dashboard() {
     e.preventDefault();
     try {
       if (editandoId) {
-        await api.put('/', { 
-          id: editandoId,
-          nome: novoProduto.nome,
-          preco: novoProduto.preco,
-          quantidade: novoProduto.quantidade,
-          categoria_id: novoProduto.categoria_id || null
-        });
+        await api.put('/', { /* ... dados ... */ });
         alert("Atualizado com sucesso!");
       } else {
         await api.post('/', novoProduto);
@@ -55,8 +51,10 @@ export function Dashboard() {
 
       setNovoProduto({ nome: '', preco: '', quantidade: '', categoria_id: '' });
       setEditandoId(null);
+      
       buscarHistorico();
       buscarDados(); 
+      buscarGrafico(); 
     } catch (error) {
       console.error("Erro na operação:", error);
       alert("Erro ao processar solicitação.");
@@ -68,7 +66,8 @@ export function Dashboard() {
       try {
         // Exclusão via DELETE
         await api.delete(`/?id=${id}`);
-        buscarDados(); 
+        buscarDados();
+        buscarGrafico();
       } catch (error) {
         console.error("Erro ao deletar:", error);
         alert("Não foi possível excluir o produto.");
@@ -108,10 +107,20 @@ export function Dashboard() {
     }
   };
 
+  const buscarGrafico = async () => {
+    try {
+      const response = await api.get('?route=grafico');
+      setDados(Array.isArray(response.data) ? response.data : []);
+    } catch (error) {
+      console.error("Erro ao carregar dados do gráfico:", error);
+    }
+  };
+
   useEffect(() => {
     buscarDados();
     buscarCategorias();
     buscarHistorico();
+    buscarGrafico();
   }, []);
 
 return (
@@ -165,6 +174,23 @@ return (
         </div>
       )}
       <InventoryLog logs={historico} />
+
+      <div className="mt-10 bg-white p-6 rounded-xl shadow-md" style={{ width: '100%', height: 400 }}>
+        <h2 className="text-xl font-bold mb-6 text-slate-800">Distribuição por Categoria</h2>
+        <ResponsiveContainer width="100%" height="80%">
+          <BarChart 
+          data={dados}
+          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="nome" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="quantidade" fill="#2563eb" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };
+
