@@ -10,52 +10,40 @@ export function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErro('');
-    
-    const result = await login(email, senha);
-    if (!result.success) {
-      setErro(result.message);
+
+    try {
+      await login(email, senha);
+    } catch (err) {
+      const mensagem = err.response?.data?.error || "Login ou Senha Inválidos";
+      setErro(mensagem);
+      alert("O estado erro agora é: " + mensagem); // Se o alert aparecer e a tela não mudar, o problema é o HTML
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">Acesso ao Sistema</h2>
-        
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {erro && (
-            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-200">
-              {erro}
-            </div>
-          )}
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700">E-mail</label>
-            <input
-              type="email"
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
+    <div className="flex h-screen items-center justify-center bg-slate-100 p-4">
+      <div className="w-full max-w-sm bg-white p-8 rounded-2xl shadow-xl">
+        <h1 className="text-2xl font-bold text-center mb-6 text-slate-800"> Gestão de Inventário Inteligente </h1>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Senha</label>
-            <input
-              type="password"
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-            />
+        {erro && (
+          <div className="mb-4 p-3 bg-red-600 text-white rounded-lg text-sm font-medium shadow-md">
+            ⚠️ {erro}
           </div>
+        )}  
 
-          <button
-            type="submit"
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Entrar
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input 
+            type="email" placeholder="E-mail" 
+            className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+            value={email} onChange={e => setEmail(e.target.value)}
+          />
+          <input 
+            type="password" placeholder="Senha" 
+            className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+            value={senha} onChange={e => setSenha(e.target.value)}
+          />
+          <button className="w-full bg-blue-600 text-white p-3 rounded-lg font-bold hover:bg-blue-700 transition-all">
+            Entrar no Sistema
           </button>
         </form>
       </div>

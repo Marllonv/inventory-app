@@ -20,8 +20,16 @@ export function Navbar() {
           
           <div className="flex items-center gap-8">
             <div className="hidden md:flex space-x-4">
-              <Link to="/dashboard" className="hover:bg-slate-700 px-3 py-2 rounded-md text-sm font-medium transition-all">
+              <Link to="/" className="hover:bg-slate-700 px-3 py-2 rounded-md text-sm font-medium transition-all">
                 Produtos
+              </Link>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-8">
+            <div className="hidden md:flex space-x-4">
+              <Link to="/usuarios" className="hover:bg-slate-700 px-3 py-2 rounded-md text-sm font-medium transition-all">
+                Usuarios
               </Link>
             </div>
           </div>

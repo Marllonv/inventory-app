@@ -1,7 +1,9 @@
 import { useContext } from 'react';
+import { Routes, Route } from 'react-router-dom'; // 1. Importar as ferramentas de rota
 import { AuthProvider, AuthContext } from './contexts/AuthContext';
 import { Dashboard } from './pages/Dashboard';
 import { Login } from './pages/Login';
+import { Usuarios } from './pages/Usuarios'; // 2. Importar sua nova página
 import { Navbar } from './components/Navbar';
 
 function Router() {
@@ -20,10 +22,13 @@ function Router() {
   }
 
   return (
-    <>
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <Dashboard />
-    </>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/usuarios" element={<Usuarios />} />
+      </Routes>
+    </div>
   );
 }
 
